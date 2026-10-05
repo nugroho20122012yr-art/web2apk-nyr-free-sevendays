@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nyr Bypass SFL</title>
+<meta name="description" content="Nyr Bypass SFL: tempel link SFL, langsung dapat link tujuan tanpa iklan. #nyr-tools">
+<meta name="theme-color" content="#dcd6f0">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nyr Bypass SFL">
+<meta property="og:description" content="Tempel link SFL, link aslinya langsung muncul. Tanpa iklan. #nyr-tools">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='6' width='52' height='52' fill='%23f4c95d' stroke='%23000' stroke-width='6'/%3E%3Ctext x='32' y='43' font-size='30' font-family='monospace' font-weight='700' text-anchor='middle' fill='%23000'%3ENy%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+  :root{
+    --bg:#dcd6f0; --paper:#fffdf7; --ink:#000; --dim:#3d3a4a;
+    --violet:#8d79d9; --yellow:#f4c95d; --coral:#e7776a; --green:#5fa777; --blue:#8fbfe0;
+    --ok:#1f6b3c; --warn:#a82a1f;
+    --b:3px solid var(--ink);
+    --sh:5px 5px 0 var(--ink); --sh-s:3px 3px 0 var(--ink);
+    --mono:'JetBrains Mono', ui-monospace, monospace; --grot:'Space Grotesk', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--mono);
+    min-height:100vh;
+    background-image:radial-gradient(rgba(0,0,0,.16) 1.4px, transparent 1.6px);
+    background-size:22px 22px;
+  }
+  .wrap{
+    max-width:640px; margin:0 auto;
+    padding:max(28px, env(safe-area-inset-top)) 18px max(60px, env(safe-area-inset-bottom));
+  }
+
+  .topbar{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px 12px; margin-bottom:22px;}
+  .top-left{display:flex; align-items:center; gap:12px; min-width:0;}
+  .brand{font-family:var(--grot); font-weight:700; font-size:18px; white-space:nowrap;}
+  .brand .x{background:var(--yellow); border:var(--b); padding:1px 7px; margin-right:4px; display:inline-block; box-shadow:var(--sh-s);}
+  .tag{font-weight:700; font-size:12px; background:var(--blue); border:var(--b); padding:5px 11px; box-shadow:var(--sh-s);}
+
+  .menu-btn{
+    width:44px; height:44px; background:var(--paper); border:var(--b); box-shadow:var(--sh-s);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:0; flex:none;
+  }
+  .menu-btn span{display:block; width:18px; height:3px; background:var(--ink);}
+
+  .screen{background:var(--paper); border:var(--b); box-shadow:8px 8px 0 var(--ink); margin-bottom:34px;}
+  .screen-bar{display:flex; align-items:center; gap:7px; padding:8px 12px; background:var(--violet); border-bottom:var(--b); font-family:var(--grot); font-weight:700; font-size:13px;}
+  .screen-bar i{width:12px; height:12px; border:2px solid var(--ink); background:var(--paper); display:block;}
+  .screen-bar i:nth-child(1){background:var(--coral);} .screen-bar i:nth-child(2){background:var(--yellow);} .screen-bar i:nth-child(3){background:var(--green);}
+  .screen-bar span{margin-left:6px;}
+  .screen-view{position:relative; aspect-ratio:16 / 9; background:#000;}
+  .screen-view video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; background:#000; pointer-events:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;}
+  .screen-view video::-webkit-media-controls, .screen-view video::-webkit-media-controls-enclosure{display:none !important;}
+  .screen-empty{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    padding:16px; text-align:center; background:var(--paper); font-size:13px; line-height:1.5;
+    background-image:repeating-linear-gradient(135deg, transparent 0 14px, rgba(0,0,0,.07) 14px 16px);
+  }
+  .screen-empty b{font-family:var(--grot); font-size:18px;}
+
+  h1{font-family:var(--grot); font-weight:700; font-size:36px; line-height:1.08; letter-spacing:-.02em; margin-bottom:12px;}
+  .badge{display:inline-block; background:var(--green); border:var(--b); box-shadow:var(--sh-s); padding:3px 10px; font-weight:700; font-size:12.5px; margin-bottom:14px;}
+  .sub{color:var(--dim); font-size:13.5px; line-height:1.7; max-width:480px; margin-bottom:28px;}
+
+  .panel{background:var(--paper); border:var(--b); box-shadow:var(--sh); padding:20px; margin-bottom:20px;}
+  .panel-label{font-family:var(--grot); font-weight:700; font-size:14px; margin-bottom:14px; display:flex; align-items:center; gap:10px;}
+  .step-no{color:var(--ink); background:var(--yellow); border:2px solid var(--ink); font-weight:700; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; flex:none;}
+
+  .row{display:flex; gap:10px;}
+  input{
+    flex:1; min-width:0; background:#fff; border:var(--b); color:var(--ink);
+    font-family:var(--mono); font-size:14px; padding:12px 13px; outline:none; border-radius:0;
+  }
+  input:focus{box-shadow:var(--sh-s); background:#fff9dd;}
+  input::placeholder{color:#7b7788;}
+
+  button{font-family:var(--grot); cursor:pointer; border-radius:0; color:var(--ink); transition:transform .08s, box-shadow .08s;}
+  button:focus-visible, input:focus-visible, a:focus-visible{outline:3px solid var(--coral); outline-offset:3px;}
+  button:active:not(:disabled), .open:active, .h-act a:active{transform:translate(3px,3px); box-shadow:0 0 0 var(--ink) !important;}
+
+  .ghost{flex:none; background:var(--paper); border:var(--b); box-shadow:var(--sh-s); font-weight:700; font-size:13px; padding:0 16px;}
+  .ghost:hover{background:var(--blue);}
+
+  .primary{
+    width:100%; background:var(--yellow); border:var(--b); box-shadow:var(--sh);
+    font-weight:700; font-size:16px; padding:16px; margin-bottom:20px;
+  }
+  .primary:hover:not(:disabled){background:#f8d77d; transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--ink);}
+  .primary:disabled{background:#cfcbd8; color:#4b4858; cursor:wait; box-shadow:var(--sh-s);}
+
+  .log{font-size:12.5px; line-height:1.9; color:var(--dim); white-space:pre-wrap;}
+  .log .ok{color:var(--ok); font-weight:700;} .log .err{color:var(--warn); font-weight:700;} .log .dim{color:#5e5a6e;}
+
+  .result{border:var(--b); background:var(--paper); box-shadow:var(--sh); padding:20px; margin-bottom:20px;}
+  .result.error{background:#f6cfca;}
+  .lbl{font-family:var(--grot); font-weight:700; font-size:13px; margin-bottom:10px;}
+  .dest{
+    background:#fff; border:2px dashed var(--ink); padding:12px 14px;
+    font-size:13px; line-height:1.55; word-break:break-all; margin-bottom:14px; font-weight:500;
+  }
+  .err-text{color:var(--warn); font-size:13.5px; line-height:1.6; word-break:break-word; font-weight:700;}
+  .actions{display:flex; gap:10px;}
+  .actions > *{flex:1; text-align:center; padding:11px 14px; height:auto;}
+  .open{
+    background:var(--green); border:var(--b); box-shadow:var(--sh-s); color:var(--ink);
+    text-decoration:none; font-family:var(--grot); font-weight:700; font-size:13px;
+  }
+  .open:hover{background:#78bb8f;}
+  .meta{margin-top:14px; font-size:12px; color:var(--dim); line-height:1.6; overflow-wrap:anywhere;}
+
+  .loader{display:inline-block; width:14px; height:14px; border:3px solid rgba(0,0,0,.25); border-top-color:var(--ink); border-radius:50%; animation:spin .7s linear infinite; vertical-align:-2px; margin-right:8px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  [hidden]{display:none !important;}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important;}}
+  @media (max-width:420px){h1{font-size:30px;} .row{flex-direction:column;} .ghost{padding:11px;} .brand{font-size:16px;} .screen{box-shadow:6px 6px 0 var(--ink);}}
+
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:15; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .overlay.show{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; left:0; bottom:0; width:min(400px, 92vw); z-index:20;
+    background:var(--paper); border-right:var(--b);
+    transform:translateX(-100%); visibility:hidden; transition:transform .25s ease, visibility 0s linear .25s;
+    display:flex; flex-direction:column; padding-top:env(safe-area-inset-top);
+  }
+  .drawer.is-open{transform:none; visibility:visible; box-shadow:8px 0 0 var(--ink); transition:transform .25s ease, visibility 0s;}
+  .d-head{display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:var(--b); background:var(--yellow);}
+  .d-head .brand{font-size:16px;}
+  .d-head .brand .x{background:var(--paper);}
+  .x-btn{background:var(--paper); border:var(--b); width:36px; height:36px; font-size:16px; font-weight:700; box-shadow:var(--sh-s);}
+  .x-btn:hover{background:var(--coral);}
+  .tabs{display:flex; gap:10px; padding:16px 18px 0;}
+  .tab{flex:1; background:var(--paper); border:var(--b); color:var(--ink); padding:10px; font-weight:700; font-size:13px;}
+  .tab.active{background:var(--violet); box-shadow:var(--sh-s);}
+  .d-body{flex:1; overflow-y:auto; overscroll-behavior:contain; padding:18px 18px 20px;}
+  .d-foot{padding:14px 18px calc(14px + env(safe-area-inset-bottom)); border-top:var(--b); font-size:12.5px; line-height:1.6; background:var(--blue);}
+  .d-foot b{font-family:var(--grot);}
+
+  .h-tools{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:12px; font-weight:700;}
+  .link-btn{background:var(--paper); border:2px solid var(--ink); color:var(--warn); font-size:12px; font-weight:700; padding:4px 9px;}
+  .link-btn:hover{background:var(--coral); color:var(--ink);}
+  .empty{border:2px dashed var(--ink); padding:26px 16px; text-align:center; color:var(--dim); font-size:12.5px; line-height:1.6;}
+  .h-item{background:#fff; border:var(--b); box-shadow:var(--sh-s); padding:13px; margin-bottom:16px;}
+  .h-date{font-size:11.5px; font-weight:700; background:var(--yellow); display:inline-block; padding:2px 8px; border:2px solid var(--ink); margin-bottom:10px;}
+  .h-k{font-size:11.5px; font-weight:700; color:var(--dim); margin-bottom:3px;}
+  .h-v{font-size:12px; line-height:1.5; word-break:break-all; margin-bottom:10px;}
+  .h-v.res{font-weight:700;}
+  .h-act{display:flex; gap:8px;}
+  .h-act button, .h-act a{
+    flex:1; text-align:center; background:var(--paper); border:2px solid var(--ink); color:var(--ink);
+    padding:7px 6px; font-family:var(--grot); font-weight:700; font-size:12px; text-decoration:none; box-shadow:2px 2px 0 var(--ink);
+  }
+  .h-act button:hover, .h-act a:hover{background:var(--blue);}
+  .h-act .del:hover{background:var(--coral);}
+
+  .guide-step{display:flex; gap:12px; margin-bottom:16px;}
+  .guide-step .step-no{margin-top:1px;}
+  .guide-step h3{font-family:var(--grot); font-size:14px; margin-bottom:3px;}
+  .guide-step p{font-size:12.5px; line-height:1.6; color:var(--dim);}
+  .tips{border:var(--b); padding:13px; font-size:12.5px; line-height:1.7; background:var(--yellow); box-shadow:var(--sh-s);}
+  .tips b{font-family:var(--grot);}
+  .tips ul{padding-left:18px; margin-top:6px;}
+
+  .modal-overlay{position:fixed; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; padding:max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); background:rgba(0,0,0,.6);}
+  .modal{width:min(420px, 100%); max-height:100%; overflow-y:auto; background:var(--paper); border:var(--b); box-shadow:8px 8px 0 var(--ink);}
+  .modal-head{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--yellow); border-bottom:var(--b); font-family:var(--grot); font-weight:700; font-size:16px; overflow-wrap:anywhere;}
+  .modal-head::before{content:"!"; flex:none; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; background:var(--coral); border:2px solid var(--ink); font-size:14px;}
+  .modal-text{padding:18px 16px 6px; font-size:13.5px; line-height:1.7; overflow-wrap:anywhere;}
+  .modal-actions{display:flex; gap:10px; padding:14px 16px 18px;}
+  .m-btn{flex:1; min-width:0; background:var(--paper); border:var(--b); box-shadow:var(--sh-s); font-weight:700; font-size:14px; padding:12px 10px;}
+  .m-btn:hover{background:var(--blue);}
+  .m-btn.m-ok{background:var(--coral);}
+  .m-btn.m-ok:hover{background:#ee8c80;}
+  @media (max-width:360px){.modal-actions{flex-direction:column-reverse;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="top-left">
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
+      <div class="brand"><span class="x">Nyr</span>Bypass SFL</div>
+    </div>
+    <div class="tag">#nyr-tools</div>
+  </div>
+
+  <section class="screen" aria-label="Video">
+    <div class="screen-bar"><i></i><i></i><i></i><span>Video</span></div>
+    <div class="screen-view">
+      <video id="vid" autoplay loop playsinline preload="auto" tabindex="-1"
+             disablepictureinpicture disableremoteplayback
+             controlslist="nodownload noplaybackrate nofullscreen noremoteplayback">
+        <source src="assets/video-layer.mp4" type="video/mp4">
+      </video>
+      <div class="screen-empty" id="vidEmpty" hidden>
+        <b>Video belum dipasang</b>
+        <span>Taruh file video-layer.mp4 di folder assets.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="badge">Tanpa iklan</div>
+  <h1>Lewatin link SFL, langsung ke tujuan.</h1>
+  <p class="sub">Tempel link SFL, tekan bypass, link aslinya langsung muncul. Nggak perlu nunggu iklan.</p>
+
+  <div class="panel">
+    <div class="panel-label"><span class="step-no">1</span> Link SFL</div>
+    <div class="row">
+      <input type="url" id="urlInput" placeholder="https://sfl.gl/xxxxxx" autocomplete="off" inputmode="url" aria-label="Link SFL">
+      <button type="button" class="ghost" id="pasteBtn">Tempel</button>
+    </div>
+  </div>
+
+  <button class="primary" id="submitBtn">Bypass sekarang</button>
+
+  <div class="panel" id="logPanel" hidden>
+    <div class="panel-label"><span class="step-no">2</span> Log</div>
+    <div class="log" id="log" aria-live="polite"></div>
+  </div>
+
+  <div class="result" id="result" hidden></div>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Menu">
+  <div class="d-head">
+    <div class="brand"><span class="x">Nyr</span>Bypass SFL</div>
+    <button type="button" class="x-btn" id="drawerClose" aria-label="Tutup menu">✕</button>
+  </div>
+  <div class="tabs">
+    <button type="button" class="tab active" data-tab="history">Riwayat</button>
+    <button type="button" class="tab" data-tab="guide">Panduan</button>
+  </div>
+  <div class="d-body">
+    <div id="tabHistory">
+      <div class="h-tools"><span id="hCount">0 riwayat</span><button type="button" class="link-btn" id="clearAll">Hapus semua</button></div>
+      <div id="hList"></div>
+    </div>
+    <div id="tabGuide" hidden>
+      <div class="guide-step"><span class="step-no">1</span><div><h3>Salin link SFL</h3><p>Ambil link pendek SFL (contoh: sfl.gl/xxxxxx) dari halaman yang mau lu buka.</p></div></div>
+      <div class="guide-step"><span class="step-no">2</span><div><h3>Tempel di kolom</h3><p>Klik tombol Tempel atau paste manual. Link harus diawali http:// atau https://</p></div></div>
+      <div class="guide-step"><span class="step-no">3</span><div><h3>Tekan Bypass sekarang</h3><p>Tunggu beberapa detik sampai proses selesai.</p></div></div>
+      <div class="guide-step"><span class="step-no">4</span><div><h3>Ambil link asli</h3><p>Salin atau buka langsung link hasilnya. Semua hasil otomatis masuk ke Riwayat.</p></div></div>
+      <div class="tips"><b>Tips</b>
+        <ul>
+          <li>Riwayat tersimpan di browser ini saja, jadi hilang kalau data browser dihapus.</li>
+          <li>Kalau gagal, cek link-nya masih valid lalu coba lagi.</li>
+          <li>Server API kadang diblokir Cloudflare, tunggu sebentar terus ulangi.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="d-foot">Developer: <b>NYR Dev</b></div>
+</aside>
+
+<div class="modal-overlay" id="confirmModal" hidden>
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="cmTitle" aria-describedby="cmText">
+    <div class="modal-head" id="cmTitle">Konfirmasi</div>
+    <p class="modal-text" id="cmText"></p>
+    <div class="modal-actions">
+      <button type="button" class="m-btn" id="cmCancel">Batal</button>
+      <button type="button" class="m-btn m-ok" id="cmOk">Lanjut</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const btn      = document.getElementById('submitBtn');
+  const input    = document.getElementById('urlInput');
+  const result   = document.getElementById('result');
+  const paste    = document.getElementById('pasteBtn');
+  const logPanel = document.getElementById('logPanel');
+  const logEl    = document.getElementById('log');
+
+  const API_PROXY  = 'api/bypass';
+  const API_DIRECT = 'https://api.ikyyxd.my.id/tools/skiplink/sfl';
+
+  async function callApi(link){
+    const q = '?url=' + encodeURIComponent(link);
+    try{
+      const r = await fetch(API_PROXY + q, { headers:{ 'Accept':'application/json' } });
+      // 404/405: proxy tidak ada (mis. hosting statis), pakai API langsung
+      if(r.status !== 404 && r.status !== 405) return r;
+    }catch(_){ /* jaringan/proxy gagal -> cadangan */ }
+    return fetch(API_DIRECT + q, { headers:{ 'Accept':'application/json, text/plain, */*' } });
+  }
+
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  const vid = document.getElementById('vid');
+  const vidEmpty = document.getElementById('vidEmpty');
+  vid.querySelector('source').addEventListener('error', () => {
+    vid.hidden = true;
+    vidEmpty.hidden = false;
+  });
+
+  // Browser bisa menolak autoplay bersuara, jadi fallback ke muted
+  function startVideo(){
+    vid.muted = false;
+    const p = vid.play();
+    if(p && p.catch){
+      p.catch(() => { vid.muted = true; vid.play().catch(() => {}); });
+    }
+  }
+  startVideo();
+
+  vid.addEventListener('pause', () => { if(!vid.ended && !document.hidden) vid.play().catch(() => {}); });
+  vid.addEventListener('ratechange', () => { if(vid.playbackRate !== 1) vid.playbackRate = 1; });
+  vid.addEventListener('contextmenu', (e) => e.preventDefault());
+  document.querySelector('.screen').addEventListener('contextmenu', (e) => e.preventDefault());
+  document.querySelector('.screen').addEventListener('dragstart', (e) => e.preventDefault());
+  try{
+    ['play','pause','stop','seekto','seekbackward','seekforward','previoustrack','nexttrack'].forEach(a => {
+      try{ navigator.mediaSession.setActionHandler(a, () => {}); }catch(_){}
+    });
+  }catch(_){}
+
+  function log(msg, cls){
+    logPanel.hidden = false;
+    const line = document.createElement('div');
+    if(cls) line.className = cls;
+    line.textContent = msg;
+    logEl.appendChild(line);
+  }
+
+  function showError(title, text, hint){
+    result.hidden = false;
+    result.className = 'result error';
+    result.innerHTML =
+      `<div class="lbl">${esc(title)}</div>
+       <div class="err-text">${esc(text)}</div>
+       ${hint ? `<div class="meta">${esc(hint)}</div>` : ''}`;
+  }
+
+  paste.addEventListener('click', async () => {
+    try{
+      const t = await navigator.clipboard.readText();
+      if(t){ input.value = t.trim(); }
+    }catch(_){}
+    input.focus();
+  });
+
+  async function bypass(){
+    if(btn.disabled) return;
+    const link = input.value.trim();
+    logEl.innerHTML = '';
+    logPanel.hidden = true;
+    result.hidden = true;
+
+    if(!link){
+      showError('Link kosong', 'Mana link yang mau dilewatin? Kasih link-nya dulu ya.');
+      return;
+    }
+    if(!/^https?:\/\//i.test(link)){
+      showError('Bukan link', 'Masukin URL yang bener, harus diawali http:// atau https://');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span>Memproses...';
+    const start = performance.now();
+    log('› Mengirim link ke API...', 'dim');
+
+    try{
+      const res = await callApi(link);
+      if(!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      log('› Membaca respon...', 'dim');
+
+      const data = await res.json();
+      if(!data || !data.status || !data.result){
+        throw new Error('API merespon tapi datanya error');
+      }
+
+      const dest = data.result.destinationUrl || data.result.url || '';
+      const runtime = data.runtime || ((performance.now() - start) / 1000).toFixed(2) + 's';
+      const safe = /^https?:\/\//i.test(dest);
+      log('✓ Bypass sukses', 'ok');
+      addHistory(link, dest, runtime);
+
+      result.hidden = false;
+      result.className = 'result';
+      result.innerHTML =
+        `<div class="lbl">Link asli</div>
+         <div class="dest">${esc(dest || '-')}</div>
+         <div class="actions">
+           <button type="button" class="ghost" id="copyBtn">Salin</button>
+           ${safe ? `<a class="open" href="${esc(dest)}" target="_blank" rel="noopener noreferrer">Buka link</a>` : ''}
+         </div>
+         <div class="meta">Waktu proses: ${esc(runtime)}</div>`;
+
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.addEventListener('click', async () => {
+        try{ await navigator.clipboard.writeText(dest); copyBtn.textContent = 'Tersalin!'; }
+        catch(_){ copyBtn.textContent = 'Gagal menyalin'; }
+        setTimeout(() => copyBtn.textContent = 'Salin', 1600);
+      });
+
+    }catch(err){
+      console.error(err);
+      log('✗ Gagal', 'err');
+      showError('Gagal bypass', err.message || 'Terjadi kesalahan tak terduga',
+        'Kemungkinan server diblokir Cloudflare atau link tidak valid.');
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Bypass sekarang';
+    }
+  }
+
+  btn.addEventListener('click', bypass);
+  input.addEventListener('keydown', (e) => { if(e.key === 'Enter') bypass(); });
+
+  const HKEY = 'sflbypass_history_v1';
+  const hList = document.getElementById('hList');
+  const hCount = document.getElementById('hCount');
+
+  function loadHistory(){ try{ return JSON.parse(localStorage.getItem(HKEY)) || []; }catch(_){ return []; } }
+  function saveHistory(l){ try{ localStorage.setItem(HKEY, JSON.stringify(l)); }catch(_){} }
+  function fmtDate(ts){
+    return new Intl.DateTimeFormat('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }).format(new Date(ts));
+  }
+  function addHistory(src, dest, runtime){
+    const l = loadHistory();
+    l.unshift({ id: Date.now() + Math.random(), src, dest, runtime, ts: Date.now() });
+    saveHistory(l.slice(0, 50));
+    renderHistory();
+  }
+  function el(tag, cls, text){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(text !== undefined) e.textContent = text;
+    return e;
+  }
+  function renderHistory(){
+    const l = loadHistory();
+    hCount.textContent = l.length + ' riwayat';
+    hList.innerHTML = '';
+    if(!l.length){
+      hList.appendChild(el('div', 'empty', 'Belum ada riwayat. Hasil bypass lu bakal muncul di sini lengkap dengan tanggalnya.'));
+      return;
+    }
+    l.forEach(it => {
+      const card = el('div', 'h-item');
+      card.appendChild(el('div', 'h-date', fmtDate(it.ts)));
+      card.appendChild(el('div', 'h-k', 'Link SFL'));
+      card.appendChild(el('div', 'h-v', it.src));
+      card.appendChild(el('div', 'h-k', 'Hasil'));
+      card.appendChild(el('div', 'h-v res', it.dest || '-'));
+      const act = el('div', 'h-act');
+      const cp = el('button', '', 'Salin');
+      cp.type = 'button';
+      cp.addEventListener('click', async () => {
+        try{ await navigator.clipboard.writeText(it.dest); cp.textContent = 'Tersalin!'; }
+        catch(_){ cp.textContent = 'Gagal'; }
+        setTimeout(() => cp.textContent = 'Salin', 1400);
+      });
+      act.appendChild(cp);
+      if(/^https?:\/\//i.test(it.dest || '')){
+        const a = el('a', '', 'Buka');
+        a.href = it.dest; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        act.appendChild(a);
+      }
+      const del = el('button', 'del', 'Hapus');
+      del.type = 'button';
+      del.addEventListener('click', () => {
+        saveHistory(loadHistory().filter(x => x.id !== it.id));
+        renderHistory();
+      });
+      act.appendChild(del);
+      card.appendChild(act);
+      hList.appendChild(card);
+    });
+  }
+  document.getElementById('clearAll').addEventListener('click', async () => {
+    if(!loadHistory().length) return;
+    const yes = await askConfirm({
+      title: 'Hapus semua riwayat?',
+      text: 'Semua riwayat bypass di browser ini akan dihapus dan tidak bisa dikembalikan.',
+      okText: 'Hapus semua'
+    });
+    if(yes){ saveHistory([]); renderHistory(); }
+  });
+
+  const cmRoot = document.getElementById('confirmModal');
+  const cmTitle = document.getElementById('cmTitle');
+  const cmText = document.getElementById('cmText');
+  const cmOk = document.getElementById('cmOk');
+  const cmCancel = document.getElementById('cmCancel');
+  let cmResolve = null;
+  let cmReturnFocus = null;
+
+  function askConfirm({ title = 'Konfirmasi', text = '', okText = 'Lanjut', cancelText = 'Batal' } = {}){
+    return new Promise((resolve) => {
+      cmResolve = resolve;
+      cmReturnFocus = document.activeElement;
+      cmTitle.textContent = title;
+      cmText.textContent = text;
+      cmOk.textContent = okText;
+      cmCancel.textContent = cancelText;
+      cmRoot.hidden = false;
+      cmCancel.focus();
+    });
+  }
+  function closeConfirm(value){
+    if(!cmResolve) return;
+    const done = cmResolve;
+    cmResolve = null;
+    cmRoot.hidden = true;
+    if(cmReturnFocus && cmReturnFocus.focus) cmReturnFocus.focus();
+    done(value);
+  }
+  cmOk.addEventListener('click', () => closeConfirm(true));
+  cmCancel.addEventListener('click', () => closeConfirm(false));
+  cmRoot.addEventListener('click', (e) => { if(e.target === cmRoot) closeConfirm(false); });
+
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.getElementById('menuBtn');
+  const drawerClose = document.getElementById('drawerClose');
+  function openDrawer(){
+    drawer.classList.add('is-open');
+    overlay.classList.add('show');
+    renderHistory();
+    drawerClose.focus();
+  }
+  function closeDrawer(){
+    if(!drawer.classList.contains('is-open')) return;
+    const hadFocus = drawer.contains(document.activeElement);
+    drawer.classList.remove('is-open');
+    overlay.classList.remove('show');
+    if(hadFocus) menuBtn.focus();
+  }
+  menuBtn.addEventListener('click', openDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === t));
+    document.getElementById('tabHistory').hidden = t.dataset.tab !== 'history';
+    document.getElementById('tabGuide').hidden = t.dataset.tab !== 'guide';
+  }));
+  document.addEventListener('keydown', (e) => {
+    if(cmResolve){
+      if(e.key === 'Escape'){ e.preventDefault(); closeConfirm(false); }
+      else if(e.key === 'Tab'){
+        const first = cmCancel, last = cmOk;
+        if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      }
+      return;
+    }
+    if(e.key === 'Escape') closeDrawer();
+  });
+
+  renderHistory();
+</script>
+</body>
+</html>
